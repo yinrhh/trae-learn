@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人技术博客</title>
+    <!-- 修正资源路径 -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/highlight.min.js"></script>
+    <script src="../../assets/js/article-loader.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>小特的技术博客</h1>
+            <p>分享技术，记录成长</p>
+        </header>
+        
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="articles.html">文章列表</a>
+            <a href="#about">关于我</a>
+        </nav>
+
+        <div class="content">
+            <div class="main-content" id="article-list">
+                <h2>最新文章</h2>
+                <!-- 文章列表将通过 JavaScript 动态加载 -->
+            </div>
+            
+            <div class="sidebar">
+                <h2>关于我</h2>
+                <img src="https://api.dicebear.com/7.x/avataaars/svg" alt="个人头像" class="profile-img">
+                <p>你好！我是一名全栈开发工程师，热爱技术分享和开源项目。</p>
+                <p>技术栈：</p>
+                <ul>
+                    <li>前端：React, Vue, TypeScript</li>
+                    <li>后端：Node.js, Python</li>
+                    <li>数据库：MySQL, MongoDB</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function initHomePage() {
+            try {
+                const loader = new ArticleLoader();
+                console.log('开始加载文章列表');
+                const articles = await loader.loadArticleList();
+                console.log('文章列表数据类型:', typeof articles);
+                console.log('是否为数组:', Array.isArray(articles));
+                console.log('文章列表数据:', articles);
+                const container = document.getElementById('article-list');
+                
+                // 修改判断逻辑
+                if (articles && Array.isArray(articles) && articles.length > 0) {
+                    console.log('找到文章，数量:', articles.length);
+                    container.innerHTML = `
+                        <h2>最新文章</h2>
+                        ${articles.map(article => `
+                            <div class="article-preview">
+                                <h3>${article.title}</h3>
+                                <div class="article-meta">发布于 ${article.date} | 分类：${article.category}</div>
+                                <p>${article.summary}</p>
+                                <a href="article.html?id=${article.id}" class="read-more">阅读全文 →</a>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    console.log('未找到文章，articles:', articles);
+                    container.innerHTML = '<h2>暂无文章</h2>';
+                }
+            } catch (error) {
+                console.error('初始化页面失败:', error);
+                document.getElementById('article-list').innerHTML = '<h2>加载文章列表失败</h2>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initHomePage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表 - 个人技术博客</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/highlight.min.js"></script>
+    <script src="assets/js/article-loader.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>文章列表</h1>
+        </header>
+        
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="articles.html">文章列表</a>
+            <a href="#about">关于我</a>
+        </nav>
+
+        <div class="article-list" id="article-list">
+            <!-- 文章列表将通过 JavaScript 动态加载 -->
+        </div>
+    </div>
+
+    <script>
+        async function initArticlesPage() {
+            try {
+                const loader = new ArticleLoader();
+                const articles = await loader.loadArticleList();
+                const container = document.getElementById('article-list');
+                
+                if (articles && articles.length > 0) {
+                    container.innerHTML = articles.map(article => `
+                        <div class="article-card">
+                            <h2>${article.title}</h2>
+                            <div class="article-meta">发布于 ${article.date} | 分类：${article.category}</div>
+                            <p>${article.summary}</p>
+                            <a href="article.html?id=${article.id}" class="read-more">阅读全文 →</a>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<h2>暂无文章</h2>';
+                }
+            } catch (error) {
+                console.error('初始化页面失败:', error);
+                document.getElementById('article-list').innerHTML = '<h2>加载文章列表失败</h2>';
+            }
+        }
+
+        window.addEventListener('load', initArticlesPage);
+    </script>
+</body>
+</html>

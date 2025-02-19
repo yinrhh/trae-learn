@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情 - 个人技术博客</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- 先加载 highlight.js 的样式和脚本 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/highlight.min.js"></script>
+    <!-- 然后加载 marked -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 最后加载我们的代码 -->
+    <script src="assets/js/article-loader.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>文章详情</h1>
+        </header>
+        
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="articles.html">文章列表</a>
+            <a href="#about">关于我</a>
+        </nav>
+
+        <div class="article-container">
+            <article class="article-content" id="content">
+                <!-- 文章内容将通过 JavaScript 动态加载 -->
+            </article>
+            
+            <aside class="article-toc" id="toc">
+                <div class="toc-container">
+                    <h3>目录</h3>
+                    <div id="toc-content"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        async function loadArticle() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const articleId = urlParams.get('id');
+                if (!articleId) {
+                    throw new Error('未指定文章ID');
+                }
+        
+                const loader = new ArticleLoader();
+                const content = await loader.loadArticle(`${articleId}.md`);
+                
+                // 生成目录（现在会同时处理内容渲染和ID添加）
+                const toc = loader.generateTOC(content);
+                document.getElementById('toc-content').appendChild(toc);
+                
+                // 代码高亮
+                if (typeof hljs !== 'undefined') {
+                    hljs.configure({
+                        languages: ['javascript', 'python', 'bash', 'json']
+                    });
+                    hljs.highlightAll();
+                }
+            } catch (error) {
+                console.error('加载文章失败:', error);
+                document.getElementById('content').innerHTML = '<h2>文章加载失败</h2>';
+            }
+        }
+
+        // 等待所有资源加载完成
+        window.addEventListener('load', loadArticle);
+    </script>
+</body>
+</html>
